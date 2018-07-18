@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "league/commonmark": "^0.17.5",
+        "ext-cmark": "*",
         "beberlei/assert": "^3.0"
     },
     "autoload": {

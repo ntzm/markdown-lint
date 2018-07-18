@@ -1,34 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ntzm\MarkdownLint\Rule;
 
-use League\CommonMark\Block\Element\Document;
-use League\CommonMark\Block\Element\Heading;
+use CommonMark\CQL;
+use CommonMark\Node\Document;
+use CommonMark\Node\Heading;
 use Ntzm\MarkdownLint\Violations;
 
 final class HeadingHierarchy extends Rule
 {
     public function getViolations(Document $document): Violations
     {
-        $violations = [];
-        $walker = $document->walker();
         $currentLevel = 0;
+        $violations = [];
 
-        while ($event = $walker->next()) {
-            $node = $event->getNode();
-
-            if (!$node instanceof Heading) {
-                continue;
-            }
-
-            $level = $node->getLevel();
-
+        $query = new CQL('/children(Heading)');
+        $query($document, function (Document $document, Heading $heading) use (&$currentLevel, &$violations) {
             // On the same level
             // Example:
             // # Foo
             // # Bar <--
-            if ($level === $currentLevel) {
-                continue;
+            if ($heading->level === $currentLevel) {
+                return true;
             }
 
             // On a higher level
@@ -37,29 +32,26 @@ final class HeadingHierarchy extends Rule
             // ## Bar
             // ### Baz
             // # Qux <--
-            if ($level < $currentLevel) {
-                $currentLevel = $level;
+            if ($heading->level < $currentLevel) {
+                $currentLevel = $heading->level;
 
-                continue;
+                return true;
             }
 
             // On one level down
             // Example:
             // # Foo
             // ## Bar <--
-            if ($level === $currentLevel + 1) {
+            if ($heading->level === $currentLevel + 1) {
                 ++$currentLevel;
 
-                continue;
+                return true;
             }
 
-            // More than one level down
-            // Example:
-            // # Foo
-            // ### Bar <--
-            $violations[] = 'Bad hierarchy';
-        }
+            $violations[] = $this->violation('Bad heading hierarchy', $heading);
+            $currentLevel = $heading->level;
+        });
 
-        return $this->generateViolationsFromArray($violations);
+        return Violations::fromArray($violations);
     }
 }

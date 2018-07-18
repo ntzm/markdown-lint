@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NtzmTest\MarkdownLint\Rule;
 
 use Ntzm\MarkdownLint\Rule\HeadingHierarchy;
@@ -28,7 +30,29 @@ final class HeadingHierarchyTest extends RuleTestCase
             ],
             [
                 '## foo',
-                ['Bad hierarchy'],
+                [
+                    ['Bad heading hierarchy', 1, 1, 1, 6],
+                ],
+            ],
+            [
+                "## foo\n\n## bar",
+                [
+                    ['Bad heading hierarchy', 1, 1, 1, 6],
+                ],
+            ],
+            [
+                "# foo\n\n# bar",
+                [],
+            ],
+            [
+                "# foo\n\n## bar\n\n### baz\n\n#qux",
+                [],
+            ],
+            [
+                "# foo\n\n### bar",
+                [
+                    ['Bad heading hierarchy', 3, 3, 1, 7],
+                ],
             ],
         ];
     }
