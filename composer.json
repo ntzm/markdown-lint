@@ -1,0 +1,30 @@
+{
+    "name": "ntzm/markdown-lint",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nat Zimmermann",
+            "email": "nat@ntzm.io"
+        }
+    ],
+    "require": {
+        "league/commonmark": "^0.17.5",
+        "beberlei/assert": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ntzm\\MarkdownLint\\": "src/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.2",
+        "friendsofphp/php-cs-fixer": "^2.12",
+        "phpstan/phpstan": "^0.10.1"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NtzmTest\\MarkdownLint\\": "test/"
+        }
+    }
+}
