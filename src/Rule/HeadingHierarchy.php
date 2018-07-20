@@ -7,9 +7,10 @@ namespace Ntzm\MarkdownLint\Rule;
 use League\CommonMark\Block\Element\Document;
 use League\CommonMark\Block\Element\Heading;
 use Ntzm\MarkdownLint\SourceLocation;
+use Ntzm\MarkdownLint\Violation;
 use Ntzm\MarkdownLint\Violations;
 
-final class HeadingHierarchy extends Rule
+final class HeadingHierarchy implements Rule
 {
     public function getViolations(Document $document): Violations
     {
@@ -19,6 +20,10 @@ final class HeadingHierarchy extends Rule
         $walker = $document->walker();
 
         while ($event = $walker->next()) {
+            if ($event->isEntering()) {
+                continue;
+            }
+
             $node = $event->getNode();
 
             if (!$node instanceof Heading) {
@@ -57,7 +62,8 @@ final class HeadingHierarchy extends Rule
                 continue;
             }
 
-            $violations[] = $this->violation(
+            $violations[] = new Violation(
+                $this,
                 'Bad heading hierarchy',
                 SourceLocation::fromBlock($node)
             );

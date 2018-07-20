@@ -17,7 +17,7 @@ final class Violation
     /** @var SourceLocation */
     private $location;
 
-    private function __construct(
+    public function __construct(
         Rule $rule,
         string $reason,
         SourceLocation $location
@@ -25,14 +25,6 @@ final class Violation
         $this->rule = $rule;
         $this->reason = $reason;
         $this->location = $location;
-    }
-
-    public static function fromRule(
-        Rule $rule,
-        string $reason,
-        SourceLocation $location
-    ): self {
-        return new self($rule, $reason, $location);
     }
 
     public function getRule(): Rule

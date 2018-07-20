@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Ntzm\MarkdownLint\Rule;
 
-use League\CommonMark\Block\Element\AbstractBlock;
 use League\CommonMark\Block\Element\Document;
+use League\CommonMark\Block\Element\ListItem;
 use Ntzm\MarkdownLint\SourceLocation;
 use Ntzm\MarkdownLint\Violation;
 use Ntzm\MarkdownLint\Violations;
 
-final class NoConsecutiveBlankLines implements Rule
+final class UniformUnorderedListBulletCharacter implements Rule
 {
     public function getViolations(Document $document): Violations
     {
-        $previousBlock = $document;
         $violations = [];
 
         $walker = $document->walker();
@@ -26,21 +25,27 @@ final class NoConsecutiveBlankLines implements Rule
 
             $node = $event->getNode();
 
-            if (!$node instanceof AbstractBlock) {
+            if (!$node instanceof ListItem) {
                 continue;
             }
 
-            if ($node->getStartLine() > $previousBlock->getEndLine() + 2) {
+            $character = $this->getBulletCharacter($node);
+
+            if ($character !== null && $character !== '-') {
                 $violations[] = new Violation(
                     $this,
-                    'Consecutive blank lines',
-                    SourceLocation::fromBetweenBlocks($previousBlock, $node)
+                    'Incorrect unordered list bullet character',
+                    SourceLocation::fromBlock($node)
                 );
             }
-
-            $previousBlock = $node;
         }
 
         return Violations::fromArray($violations);
+    }
+
+    private function getBulletCharacter(ListItem $listItem): ?string
+    {
+        // TODO: Make PR to get expose list data
+        return ((array) $listItem)["\0*\0listData"]->bulletChar;
     }
 }
