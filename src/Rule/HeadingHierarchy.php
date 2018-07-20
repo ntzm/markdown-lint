@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ntzm\MarkdownLint\Rule;
 
-use CommonMark\CQL;
-use CommonMark\Node\Document;
-use CommonMark\Node\Heading;
+use League\CommonMark\Block\Element\Document;
+use League\CommonMark\Block\Element\Heading;
+use Ntzm\MarkdownLint\SourceLocation;
 use Ntzm\MarkdownLint\Violations;
 
 final class HeadingHierarchy extends Rule
@@ -16,14 +16,23 @@ final class HeadingHierarchy extends Rule
         $currentLevel = 0;
         $violations = [];
 
-        $query = new CQL('/children(Heading)');
-        $query($document, function (Document $document, Heading $heading) use (&$currentLevel, &$violations) {
+        $walker = $document->walker();
+
+        while ($event = $walker->next()) {
+            $node = $event->getNode();
+
+            if (!$node instanceof Heading) {
+                continue;
+            }
+
+            $level = $node->getLevel();
+
             // On the same level
             // Example:
             // # Foo
             // # Bar <--
-            if ($heading->level === $currentLevel) {
-                return true;
+            if ($level === $currentLevel) {
+                continue;
             }
 
             // On a higher level
@@ -32,25 +41,29 @@ final class HeadingHierarchy extends Rule
             // ## Bar
             // ### Baz
             // # Qux <--
-            if ($heading->level < $currentLevel) {
-                $currentLevel = $heading->level;
+            if ($level < $currentLevel) {
+                $currentLevel = $level;
 
-                return true;
+                continue;
             }
 
             // On one level down
             // Example:
             // # Foo
             // ## Bar <--
-            if ($heading->level === $currentLevel + 1) {
+            if ($level === $currentLevel + 1) {
                 ++$currentLevel;
 
-                return true;
+                continue;
             }
 
-            $violations[] = $this->violation('Bad heading hierarchy', $heading);
-            $currentLevel = $heading->level;
-        });
+            $violations[] = $this->violation(
+                'Bad heading hierarchy',
+                SourceLocation::fromBlock($node)
+            );
+
+            $currentLevel = $level;
+        }
 
         return Violations::fromArray($violations);
     }

@@ -9,8 +9,8 @@
         }
     ],
     "require": {
-        "ext-cmark": "*",
-        "beberlei/assert": "^3.0"
+        "beberlei/assert": "^3.0",
+        "league/commonmark": "^0.17.5"
     },
     "autoload": {
         "psr-4": {

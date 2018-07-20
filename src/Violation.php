@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ntzm\MarkdownLint;
 
-use CommonMark\Node;
 use Ntzm\MarkdownLint\Rule\Rule;
 
 final class Violation
@@ -12,28 +11,28 @@ final class Violation
     /** @var Rule */
     private $rule;
 
-    /** @var Node */
-    private $violatingNode;
-
     /** @var string */
     private $reason;
 
+    /** @var SourceLocation */
+    private $location;
+
     private function __construct(
         Rule $rule,
-        Node $violatingNode,
-        string $reason
+        string $reason,
+        SourceLocation $location
     ) {
         $this->rule = $rule;
-        $this->violatingNode = $violatingNode;
         $this->reason = $reason;
+        $this->location = $location;
     }
 
     public static function fromRule(
         Rule $rule,
-        Node $violatingNode,
-        string $reason
+        string $reason,
+        SourceLocation $location
     ): self {
-        return new self($rule, $violatingNode, $reason);
+        return new self($rule, $reason, $location);
     }
 
     public function getRule(): Rule
@@ -41,13 +40,13 @@ final class Violation
         return $this->rule;
     }
 
-    public function getViolatingNode(): Node
-    {
-        return $this->violatingNode;
-    }
-
     public function getReason(): string
     {
         return $this->reason;
+    }
+
+    public function getLocation(): SourceLocation
+    {
+        return $this->location;
     }
 }

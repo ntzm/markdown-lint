@@ -25,25 +25,40 @@ final class NoConsecutiveBlankLinesTest extends RuleTestCase
                 [],
             ],
             [
-                "\nfoo",
+                '
+foo',
                 [],
             ],
             [
-                "# foo\n\n# bar",
+                'foo
+
+bar',
+                [],
+            ],
+            [
+                '# foo
+
+
+# bar',
                 [
-                    ['Consecutive blank lines', 3, 3, 1, 5],
+                    ['Consecutive blank lines', 2, 3],
                 ],
             ],
             [
-                "foo\n\nbar",
+                'foo
+
+
+bar',
                 [
-                    ['Consecutive blank lines', 3, 3, 1, 3],
+                    ['Consecutive blank lines', 2, 3],
                 ],
             ],
             [
-                "\n\nfoo",
+                '
+
+foo',
                 [
-                    ['Consecutive blank lines', 3, 3, 1, 3],
+                    ['Consecutive blank lines', 1, 2],
                 ],
             ],
         ];

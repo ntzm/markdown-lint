@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Ntzm\MarkdownLint;
 
+use League\CommonMark\DocParser;
+use League\CommonMark\Environment;
 use Ntzm\MarkdownLint\Rule\Rule;
-use function CommonMark\Parse;
 
 final class Run
 {
@@ -23,7 +24,9 @@ final class Run
 
     public function getViolations(): Violations
     {
-        $document = Parse($this->input);
+        $environment = Environment::createCommonMarkEnvironment();
+        $parser = new DocParser($environment);
+        $document = $parser->parse($this->input);
 
         $violationsAggregate = [];
 

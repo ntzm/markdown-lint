@@ -31,13 +31,13 @@ final class HeadingHierarchyTest extends RuleTestCase
             [
                 '## foo',
                 [
-                    ['Bad heading hierarchy', 1, 1, 1, 6],
+                    ['Bad heading hierarchy', 1, 1],
                 ],
             ],
             [
                 "## foo\n\n## bar",
                 [
-                    ['Bad heading hierarchy', 1, 1, 1, 6],
+                    ['Bad heading hierarchy', 1, 1],
                 ],
             ],
             [
@@ -51,7 +51,7 @@ final class HeadingHierarchyTest extends RuleTestCase
             [
                 "# foo\n\n### bar",
                 [
-                    ['Bad heading hierarchy', 3, 3, 1, 7],
+                    ['Bad heading hierarchy', 3, 3],
                 ],
             ],
         ];

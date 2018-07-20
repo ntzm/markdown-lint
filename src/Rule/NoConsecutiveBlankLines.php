@@ -4,26 +4,36 @@ declare(strict_types=1);
 
 namespace Ntzm\MarkdownLint\Rule;
 
-use CommonMark\CQL;
-use CommonMark\Node;
-use CommonMark\Node\Document;
+use League\CommonMark\Block\Element\AbstractBlock;
+use League\CommonMark\Block\Element\Document;
+use Ntzm\MarkdownLint\SourceLocation;
 use Ntzm\MarkdownLint\Violations;
 
 final class NoConsecutiveBlankLines extends Rule
 {
     public function getViolations(Document $document): Violations
     {
-        $previousNodeEndLine = 1;
+        $previousBlock = $document;
         $violations = [];
 
-        $query = new CQL('/children');
-        $query($document, function (Document $document, Node $node) use (&$previousNodeEndLine, &$violations): void {
-            if ($node->startLine > $previousNodeEndLine + 1) {
-                $violations[] = $this->violation('Consecutive blank lines', $node);
+        $walker = $document->walker();
+
+        while ($event = $walker->next()) {
+            $node = $event->getNode();
+
+            if (!$node instanceof AbstractBlock) {
+                continue;
             }
 
-            $previousNodeEndLine = $node->endLine;
-        });
+            if ($node->getStartLine() > $previousBlock->getEndLine() + 2) {
+                $violations[] = $this->violation(
+                    'Consecutive blank lines',
+                    SourceLocation::fromBetweenBlocks($previousBlock, $node)
+                );
+            }
+
+            $previousBlock = $node;
+        }
 
         return Violations::fromArray($violations);
     }
