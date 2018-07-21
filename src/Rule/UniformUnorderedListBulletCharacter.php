@@ -6,6 +6,7 @@ namespace Ntzm\MarkdownLint\Rule;
 
 use League\CommonMark\Block\Element\Document;
 use League\CommonMark\Block\Element\ListItem;
+use Ntzm\MarkdownLint\NodeIterator;
 use Ntzm\MarkdownLint\SourceLocation;
 use Ntzm\MarkdownLint\Violation;
 use Ntzm\MarkdownLint\Violations;
@@ -16,15 +17,9 @@ final class UniformUnorderedListBulletCharacter implements Rule
     {
         $violations = [];
 
-        $walker = $document->walker();
+        $nodes = new NodeIterator($document);
 
-        while ($event = $walker->next()) {
-            if ($event->isEntering()) {
-                continue;
-            }
-
-            $node = $event->getNode();
-
+        foreach ($nodes as $node) {
             if (!$node instanceof ListItem) {
                 continue;
             }

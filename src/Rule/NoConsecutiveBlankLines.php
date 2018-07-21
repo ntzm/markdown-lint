@@ -6,6 +6,7 @@ namespace Ntzm\MarkdownLint\Rule;
 
 use League\CommonMark\Block\Element\AbstractBlock;
 use League\CommonMark\Block\Element\Document;
+use Ntzm\MarkdownLint\NodeIterator;
 use Ntzm\MarkdownLint\SourceLocation;
 use Ntzm\MarkdownLint\Violation;
 use Ntzm\MarkdownLint\Violations;
@@ -17,15 +18,9 @@ final class NoConsecutiveBlankLines implements Rule
         $previousBlock = $document;
         $violations = [];
 
-        $walker = $document->walker();
+        $nodes = new NodeIterator($document);
 
-        while ($event = $walker->next()) {
-            if ($event->isEntering()) {
-                continue;
-            }
-
-            $node = $event->getNode();
-
+        foreach ($nodes as $node) {
             if (!$node instanceof AbstractBlock) {
                 continue;
             }
