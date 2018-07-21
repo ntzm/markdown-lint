@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Ntzm\MarkdownLint\Rule;
 
 use League\CommonMark\Block\Element\Document;
+use League\CommonMark\Block\Element\ListBlock;
+use League\CommonMark\Block\Element\ListData;
 use League\CommonMark\Block\Element\ListItem;
 use Ntzm\MarkdownLint\NodeIterator;
 use Ntzm\MarkdownLint\RuleConfig\UniformUnorderedListBulletCharacterConfig;
@@ -19,8 +21,9 @@ final class UniformUnorderedListBulletCharacter implements Rule
      */
     private $config;
 
-    public function __construct(UniformUnorderedListBulletCharacterConfig $config = null)
-    {
+    public function __construct(
+        UniformUnorderedListBulletCharacterConfig $config = null
+    ) {
         $this->config = $config ?? UniformUnorderedListBulletCharacterConfig::default();
     }
 
@@ -35,23 +38,29 @@ final class UniformUnorderedListBulletCharacter implements Rule
                 continue;
             }
 
-            $character = $this->getBulletCharacter($node);
+            $listData = $this->getListData($node);
 
-            if ($character !== null && $character !== $this->config->getCharacter()) {
-                $violations[] = new Violation(
-                    $this,
-                    'Incorrect unordered list bullet character',
-                    SourceLocation::fromBlock($node)
-                );
+            if ($listData->type !== ListBlock::TYPE_UNORDERED) {
+                continue;
             }
+
+            if ($listData->bulletChar === $this->config->getCharacter()) {
+                continue;
+            }
+
+            $violations[] = new Violation(
+                $this,
+                'Incorrect unordered list bullet character',
+                SourceLocation::fromBlock($node)
+            );
         }
 
         return Violations::fromArray($violations);
     }
 
-    private function getBulletCharacter(ListItem $listItem): ?string
+    private function getListData(ListItem $listItem): ListData
     {
         // TODO: Make PR to get expose list data
-        return ((array) $listItem)["\0*\0listData"]->bulletChar;
+        return ((array) $listItem)["\0*\0listData"];
     }
 }

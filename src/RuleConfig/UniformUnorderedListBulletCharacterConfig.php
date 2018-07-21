@@ -17,7 +17,10 @@ final class UniformUnorderedListBulletCharacterConfig implements RuleConfig
 
     private function __construct(string $character)
     {
-        Assert::that($character)->inArray([self::CHARACTER_DASH, self::CHARACTER_ASTERISK]);
+        Assert::that($character)->inArray([
+            self::CHARACTER_DASH,
+            self::CHARACTER_ASTERISK,
+        ]);
 
         $this->character = $character;
     }
