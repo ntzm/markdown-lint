@@ -38,6 +38,23 @@ final class UniformUnorderedListBulletCharacterTest extends RuleTestCase
                     ['Incorrect unordered list bullet character', 1, 1],
                 ],
             ],
+            [
+                '# Foo
+
+* bar',
+                [
+                    ['Incorrect unordered list bullet character', 3, 3],
+                ],
+            ],
+            [
+                '* foo
+- bar
+* baz',
+                [
+                    ['Incorrect unordered list bullet character', 1, 1],
+                    ['Incorrect unordered list bullet character', 3, 3],
+                ],
+            ],
         ];
     }
 
