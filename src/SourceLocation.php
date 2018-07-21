@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ntzm\MarkdownLint;
 
 use League\CommonMark\Block\Element\AbstractBlock;
+use League\CommonMark\Block\Element\Document;
 
 final class SourceLocation
 {
@@ -34,8 +35,12 @@ final class SourceLocation
         AbstractBlock $blockA,
         AbstractBlock $blockB
     ): self {
+        $firstLine = $blockA instanceof Document
+            ? 0
+            : $blockA->getEndLine();
+
         return new self(
-            $blockA->getEndLine() + 1,
+            $firstLine + 1,
             $blockB->getStartLine() - 1
         );
     }

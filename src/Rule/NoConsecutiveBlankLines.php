@@ -25,7 +25,11 @@ final class NoConsecutiveBlankLines implements Rule
                 continue;
             }
 
-            if ($node->getStartLine() > $previousBlock->getEndLine() + 2) {
+            $previousLine = $previousBlock instanceof Document
+                ? 0
+                : $previousBlock->getEndLine();
+
+            if ($node->getStartLine() > $previousLine + 2) {
                 $violations[] = new Violation(
                     $this,
                     'Consecutive blank lines',

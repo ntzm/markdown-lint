@@ -61,6 +61,11 @@ foo',
                     ['Consecutive blank lines', 1, 2],
                 ],
             ],
+            [
+                '
+foo',
+                [],
+            ],
         ];
     }
 
